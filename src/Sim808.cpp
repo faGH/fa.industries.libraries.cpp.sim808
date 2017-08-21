@@ -79,5 +79,19 @@ TinyGPSLocation Sim808::getLocation()
 
 bool Sim808::getAndSendLocationViaHttpGet(String url)
 {
-  return false;
+  TinyGPSLocation location = getLocation();
+  String latitude = String(location.lat());
+  String longitude = String(location.lng());
+
+  url.replace("{lat}", latitude);
+  url.replace("{lng}", longitude);
+
+  String response1 = _at.sendCommand(_connection, "AT+HTTPINIT");
+  String response2 = _at.sendCommand(_connection, "AT+HTTPPARA=\"CID\",1");
+  String response3 = _at.sendCommand(_connection, "AT+HTTPPARA=\"URL\",\"" + url + "\"");
+  String response4 = _at.sendCommand(_connection, "AT+HTTPACTION=0");
+  String response5 = _at.sendCommand(_connection, "AT+HTTPREAD");
+  String response6 = _at.sendCommand(_connection, "AT+HTTPTERM");
+
+  return _at.isOk(response1)  && _at.isOk(response2) && _at.isOk(response3)  && _at.isOk(response4) && _at.isOk(response5) && _at.isOk(response6);;
 }

@@ -16,7 +16,7 @@ void setup() {
 }
 
 void loop() {
-  bool locationTransmissionSuccessful = modem.getAndSendLocationViaHttpGet("URL_WITH_PLACEHOLDERS");
+  bool locationTransmissionSuccessful = modem.getAndSendLocationViaHttpGet("http://api.test.net/api/location/{lat}/{lng}");
 
   delay(1000);
 }
