@@ -1,8 +1,13 @@
-# fa.industries.libraries.cpp.sim808
-### FrostAura.Industries.Libraries.C++.Sim808
+# fa.industries.libraries.iot
+### FrostAura.Industries.Libraries.IoT
 
 ## Description
-Library written in C++ with Ardoino IOT in mind to make working with the SIM8xx (E.g. SIM808) and SIM9xx (E.g. SIM908) more convenient.
+Library collection written in C++ with Ardoino IOT in mind
+
+## Libraries
+* Sim808 - SIM8xx (E.g. SIM808) and SIM9xx (E.g. SIM908) more convenient
+* DebugAssist - Simplifies writing debug information to serial
+* AtAssist - Simplifies interaction via AT commands
 
 ## Usage
 * Ensure the Ardoino IDE is installed and set up
