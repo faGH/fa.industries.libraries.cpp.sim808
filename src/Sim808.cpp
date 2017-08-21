@@ -16,7 +16,7 @@ Sim808::Sim808(int rxPin, int txPin) : _connection(rxPin, txPin)
   _gsmEnabled = false;
 }
 
-Sim808::initialize(int baudRate, bool debug)
+void Sim808::initialize(int baudRate, bool debug)
 {
   _debug = debug;
   _debugger.initialize(debug);
@@ -24,7 +24,7 @@ Sim808::initialize(int baudRate, bool debug)
   _debugger.printLogLn("Initializing Sim808");
 }
 
-bool Sim808::enableGsm(String apn, String username = "", String password = "")
+bool Sim808::enableGsm(String apn, String username /*= ""*/, String password /*= ""*/)
 {
   _debugger.printLogLn("Enabling GSM");
   _debugger.printLogLn("Setting up APN");
@@ -77,4 +77,7 @@ TinyGPSLocation Sim808::getLocation()
   return _gps.location;
 }
 
-// TODO: Keep track of whether or not GPS and GSM is enabled and throw errors when stuff are being performed when it's not supposed to
+bool Sim808::getAndSendLocationViaHttpGet(String url)
+{
+  return false;
+}

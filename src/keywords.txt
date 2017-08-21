@@ -29,10 +29,11 @@ printLogLn	KEYWORD2
 enableGsm	KEYWORD2
 enableGps	KEYWORD2
 getLocation	KEYWORD2
-sendLocationToUrl	KEYWORD2
+getAndSendLocationViaHttpGet	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-#SAMPLE_CONTANT	LITERAL1
+Serial LITERAL1
+String LITERAL1

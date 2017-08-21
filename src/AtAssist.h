@@ -14,7 +14,7 @@ class AtAssist
 {
   public:
     AtAssist();
-    initialize(bool debug);
+    void initialize(bool debug);
     String sendCommand(SoftwareSerial connection, String command, int timeout = 1000);
     bool isOk(String commandResponse);
   private:

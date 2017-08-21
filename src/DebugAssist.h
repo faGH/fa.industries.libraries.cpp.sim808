@@ -12,9 +12,9 @@ class DebugAssist
 {
   public:
     DebugAssist();
-    initialize(bool debug);
-    printLog(String message);
-    printLogLn(String message);
+    void initialize(bool debug);
+    void printLog(String message);
+    void printLogLn(String message);
   private:
     bool _debug;
 };

@@ -7,7 +7,6 @@
 #ifndef SIM_808_H
 #define SIM_808_H
 
-#include "Arduino.h"
 #include "SoftwareSerial.h"
 #include "TinyGPS++.h"
 #include "string.h"
@@ -18,9 +17,10 @@ class Sim808
 {
   public:
     Sim808(int rxPin, int txPin);
-    initialize(int baudRate, bool debug);
+    void initialize(int baudRate, bool debug);
     bool enableGsm(String apn, String username = "", String password = "");
     bool enableGps();
+    bool getAndSendLocationViaHttpGet(String url);
     TinyGPSLocation getLocation();
   private:
     bool _debug;
