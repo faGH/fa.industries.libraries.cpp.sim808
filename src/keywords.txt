@@ -1,0 +1,38 @@
+#######################################
+# Syntax Coloring Map For FrostAura.Industries.Libraries.IoT
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Sim808	KEYWORD1
+AtAssist	KEYWORD1
+DebugAssist	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+# Generic methods
+initialize	KEYWORD2
+
+# AtAssist methods
+sendCommand	KEYWORD2
+isOk	KEYWORD2
+
+# DebugAssist methods
+printLog	KEYWORD2
+printLogLn	KEYWORD2
+
+# Sim808 methods
+enableGsm	KEYWORD2
+enableGps	KEYWORD2
+getLocation	KEYWORD2
+sendLocationToUrl	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+#SAMPLE_CONTANT	LITERAL1
