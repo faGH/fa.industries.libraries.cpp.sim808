@@ -15,7 +15,7 @@ class AtAssist
   public:
     AtAssist();
     void initialize(bool debug);
-    String sendCommand(SoftwareSerial connection, String command, int timeout = 1000);
+    String sendCommand(SoftwareSerial& connection, String command, int timeout = 1000);
     bool isOk(String commandResponse);
   private:
     bool _debug;

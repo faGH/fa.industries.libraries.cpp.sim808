@@ -21,12 +21,18 @@ void Sim808::initialize(int baudRate, bool debug)
   _debug = debug;
   _debugger.initialize(debug);
   _at.initialize(debug);
-  _debugger.printLogLn("Initializing Sim808");
+  _debugger.printLogLn("Initializing Sim808 at " + String(baudRate));
+  _connection.begin(baudRate);
 }
 
 bool Sim808::enableGsm(String apn, String username /*= ""*/, String password /*= ""*/)
 {
   _debugger.printLogLn("Enabling GSM");
+
+  _debugger.printLogLn("Checking signal quality");
+  String atResponse2 = _at.sendCommand(_connection, "AT+CSQ");
+  String atResponse3 = _at.sendCommand(_connection, "ATH");
+
   _debugger.printLogLn("Setting up APN");
   _at.sendCommand(_connection, "AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
   _at.sendCommand(_connection, "AT+SAPBR=3,1,\"APN\",\"" + apn + "\"");
@@ -35,14 +41,11 @@ bool Sim808::enableGsm(String apn, String username /*= ""*/, String password /*=
 
   _debugger.printLogLn("Enabling bearer");
   String atResponse = _at.sendCommand(_connection, "AT+SAPBR=1,1");
-  _debugger.printLogLn("Checking signal quality");
-  String atResponse2 = _at.sendCommand(_connection, "AT+CSQ");
-  _debugger.printLogLn("Checking signal quality");
-  String atResponse3 = _at.sendCommand(_connection, "ATH");
+  String atResponse4 = _at.sendCommand(_connection, "AT+SAPBR=2,1");
 
   _gsmEnabled = true;
 
-  return _at.isOk(atResponse) && _at.isOk(atResponse2) && _at.isOk(atResponse3);
+  return _at.isOk(atResponse4) && _at.isOk(atResponse2) && _at.isOk(atResponse3);
 }
 
 bool Sim808::enableGps()
@@ -69,7 +72,7 @@ TinyGPSLocation Sim808::getLocation()
         int inByte = _connection.read();
         _gps.encode(inByte);
         char inChar = inByte;
-        _debugger.printLogLn(String(inChar));
+        _debugger.printLog(String(inChar));
       }
     } 
   }

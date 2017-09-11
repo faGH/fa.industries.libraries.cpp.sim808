@@ -16,12 +16,14 @@ void AtAssist::initialize(bool debug)
     _debugger.initialize(debug);
 }
 
-String AtAssist::sendCommand(SoftwareSerial connection, String command, int timeout /*= 1000*/)
+String AtAssist::sendCommand(SoftwareSerial& connection, String command, int timeout /*= 1000*/)
 {
     String response = "";
      
     connection.println(command);
     
+    _debugger.printLogLn("SERIAL REQUEST:: " + command);
+
     long int time = millis();
     while( (time+timeout) > millis())
     {
