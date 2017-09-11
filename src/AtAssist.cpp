@@ -22,7 +22,7 @@ String AtAssist::sendCommand(SoftwareSerial& connection, String command, int tim
      
     connection.println(command);
     
-    _debugger.printLogLn("SERIAL REQUEST:: " + command);
+    _debugger.printLogLn("SERIAL REQUEST:: '" + command + "'");
 
     long int time = millis();
     while( (time+timeout) > millis())
@@ -35,7 +35,7 @@ String AtAssist::sendCommand(SoftwareSerial& connection, String command, int tim
       }  
     }  
 
-    _debugger.printLogLn("SERIAL:: " + response);
+    _debugger.printLogLn("SERIAL RESPONSE:: '" + response + "'");
       
     return response;
 }

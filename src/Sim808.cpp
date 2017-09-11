@@ -28,28 +28,33 @@ void Sim808::initialize(int baudRate, bool debug)
 bool Sim808::enableGsm(String apn, String username /*= ""*/, String password /*= ""*/)
 {
   _debugger.printLogLn("Enabling GSM");
-
   _debugger.printLogLn("Checking signal quality");
+
   String atResponse2 = _at.sendCommand(_connection, "AT+CSQ");
   String atResponse3 = _at.sendCommand(_connection, "ATH");
 
   _debugger.printLogLn("Setting up APN");
   _at.sendCommand(_connection, "AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
   _at.sendCommand(_connection, "AT+SAPBR=3,1,\"APN\",\"" + apn + "\"");
-  _at.sendCommand(_connection, "AT+SAPBR=3,1,\"USER\",\"" + username + "\"");
-  _at.sendCommand(_connection, "AT+SAPBR=3,1,\"PWD\",\"" + password + "\"");
+
+  if(username.length() > 0)
+    _at.sendCommand(_connection, "AT+SAPBR=3,1,\"USER\",\"" + username + "\"");
+  if(password.length() > 0)
+    _at.sendCommand(_connection, "AT+SAPBR=3,1,\"PWD\",\"" + password + "\"");
 
   _debugger.printLogLn("Enabling bearer");
   String atResponse = _at.sendCommand(_connection, "AT+SAPBR=1,1");
-  String atResponse4 = _at.sendCommand(_connection, "AT+SAPBR=2,1");
 
   _gsmEnabled = true;
 
-  return _at.isOk(atResponse4) && _at.isOk(atResponse2) && _at.isOk(atResponse3);
+  return _at.isOk(atResponse2) && _at.isOk(atResponse3);
 }
 
 bool Sim808::enableGps()
 {
+  _debugger.printLogLn("Ensuring disabled GPS");
+  _at.sendCommand(_connection, "AT+CGNSPWR=0");
+  delay(1000);
   _debugger.printLogLn("Enabling GPS");
   _debugger.printLogLn("Powering on GPS");
   String atResponse = _at.sendCommand(_connection, "AT+CGNSPWR=1");
@@ -66,28 +71,38 @@ TinyGPSLocation Sim808::getLocation()
   if(_gpsEnabled)
   {
     _debugger.printLogLn("Getting location");
+
+    long startTime = millis();
   
     while (!_gps.location.isUpdated()) {
       while (_connection.available() > 0 && !_gps.location.isUpdated()) {
         int inByte = _connection.read();
         _gps.encode(inByte);
         char inChar = inByte;
-        _debugger.printLog(String(inChar));
       }
-    } 
+    }
+
+    char buf[50];
+    sprintf(buf,"Time to get location: '%lu' milliseconds",millis() - startTime); 
+  
+    _debugger.printLogLn(String(buf));
   }
 
   return _gps.location;
 }
 
-bool Sim808::getAndSendLocationViaHttpGet(String url)
+bool Sim808::getAndSendLocationViaHttpGet(String& url)
 {
   TinyGPSLocation location = getLocation();
   String latitude = String(location.lat());
   String longitude = String(location.lng());
 
+  latitude.replace(".", "DOT");
+  longitude.replace(".", "DOT");
   url.replace("{lat}", latitude);
   url.replace("{lng}", longitude);
+
+  _debugger.printLogLn("GET: '" + url + "'");
 
   String response1 = _at.sendCommand(_connection, "AT+HTTPINIT");
   String response2 = _at.sendCommand(_connection, "AT+HTTPPARA=\"CID\",1");
@@ -96,5 +111,5 @@ bool Sim808::getAndSendLocationViaHttpGet(String url)
   String response5 = _at.sendCommand(_connection, "AT+HTTPREAD");
   String response6 = _at.sendCommand(_connection, "AT+HTTPTERM");
 
-  return _at.isOk(response1)  && _at.isOk(response2) && _at.isOk(response3)  && _at.isOk(response4) && _at.isOk(response5) && _at.isOk(response6);;
+  return _at.isOk(response1)  && _at.isOk(response2) && _at.isOk(response3)  && _at.isOk(response4) && _at.isOk(response6);;
 }

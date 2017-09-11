@@ -20,7 +20,7 @@ class Sim808
     void initialize(int baudRate, bool debug);
     bool enableGsm(String apn, String username = "", String password = "");
     bool enableGps();
-    bool getAndSendLocationViaHttpGet(String url);
+    bool getAndSendLocationViaHttpGet(String& url);
     TinyGPSLocation getLocation();
   private:
     bool _debug;
