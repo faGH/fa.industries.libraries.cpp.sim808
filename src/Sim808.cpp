@@ -10,10 +10,11 @@
 #include "DebugAssist.h"
 #include "AtAssist.h"
 
-Sim808::Sim808(int rxPin, int txPin) : _connection(rxPin, txPin)
+Sim808::Sim808(int rxPin, int txPin, int powerPin) : _connection(rxPin, txPin)
 { 
   _gpsEnabled = false;
   _gsmEnabled = false;
+  _powerPin = powerPin;
 }
 
 void Sim808::initialize(int baudRate, bool debug)
@@ -21,8 +22,21 @@ void Sim808::initialize(int baudRate, bool debug)
   _debug = debug;
   _debugger.initialize(debug);
   _at.initialize(debug);
-  _debugger.printLogLn("Initializing Sim808 at " + String(baudRate));
+  _debugger.printLogLn("Initializing module at " + String(baudRate));
+
+  // Reset the modem
+  pinMode(_powerPin, OUTPUT);
+  _debugger.printLogLn("Powering off modem");
+  digitalWrite(_powerPin, LOW);
+  _debugger.printLogLn("Modem off. Waiting 5 seconds to ensure reset.");
+  //delay(5000);
+  _debugger.printLogLn("Powering on modem");
+  digitalWrite(_powerPin, HIGH);
+
+  _debugger.printLogLn("Waiting 5 seconds to ensure GSM is initialized.");
+  //delay(5000);
   _connection.begin(baudRate);
+  _connection.flush();
 }
 
 bool Sim808::enableGsm(String apn, String username /*= ""*/, String password /*= ""*/)
@@ -30,8 +44,8 @@ bool Sim808::enableGsm(String apn, String username /*= ""*/, String password /*=
   _debugger.printLogLn("Enabling GSM");
   _debugger.printLogLn("Checking signal quality");
 
-  String atResponse2 = _at.sendCommand(_connection, "AT+CSQ");
-  String atResponse3 = _at.sendCommand(_connection, "ATH");
+  _at.sendCommand(_connection, "AT+CSQ");
+  _at.sendCommand(_connection, "ATH");
 
   _debugger.printLogLn("Setting up APN");
   _at.sendCommand(_connection, "AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
@@ -43,18 +57,15 @@ bool Sim808::enableGsm(String apn, String username /*= ""*/, String password /*=
     _at.sendCommand(_connection, "AT+SAPBR=3,1,\"PWD\",\"" + password + "\"");
 
   _debugger.printLogLn("Enabling bearer");
-  String atResponse = _at.sendCommand(_connection, "AT+SAPBR=1,1");
+  _at.sendCommand(_connection, "AT+SAPBR=1,1");
 
   _gsmEnabled = true;
 
-  return _at.isOk(atResponse2) && _at.isOk(atResponse3);
+  return _gsmEnabled;
 }
 
 bool Sim808::enableGps()
 {
-  _debugger.printLogLn("Ensuring disabled GPS");
-  _at.sendCommand(_connection, "AT+CGNSPWR=0");
-  delay(1000);
   _debugger.printLogLn("Enabling GPS");
   _debugger.printLogLn("Powering on GPS");
   String atResponse = _at.sendCommand(_connection, "AT+CGNSPWR=1");
@@ -66,8 +77,21 @@ bool Sim808::enableGps()
   return _at.isOk(atResponse) && _at.isOk(atResponse2);
 }
 
+bool Sim808::disableGps()
+{
+  _debugger.printLogLn("Disabling GPS");
+  _debugger.printLogLn("Powering off GPS");
+  String atResponse = _at.sendCommand(_connection, "AT+CGNSPWR=0");
+
+  _gpsEnabled = false;
+
+  return _at.isOk(atResponse);
+}
+
 TinyGPSLocation Sim808::getLocation()
 {
+  if(!_gpsEnabled) enableGps();
+
   if(_gpsEnabled)
   {
     _debugger.printLogLn("Getting location");
@@ -91,25 +115,29 @@ TinyGPSLocation Sim808::getLocation()
   return _gps.location;
 }
 
-bool Sim808::getAndSendLocationViaHttpGet(String& url)
+bool Sim808::getAndSendLocationViaHttpGet(String url)
 {
-  TinyGPSLocation location = getLocation();
-  String latitude = String(location.lat());
-  String longitude = String(location.lng());
-
+  //TinyGPSLocation location = getLocation();
+  //String latitude = String(location.lat());
+  //String longitude = String(location.lng());
+  String latitude = "-31.123";
+  String longitude = "29.321";
   latitude.replace(".", "DOT");
   longitude.replace(".", "DOT");
   url.replace("{lat}", latitude);
   url.replace("{lng}", longitude);
 
-  _debugger.printLogLn("GET: '" + url + "'");
+  _debugger.printLogLn(url);
+  String command = "AT+HTTPPARA=\"URL\",\"" + url + "\"";
+  _debugger.printLogLn(command);
 
   String response1 = _at.sendCommand(_connection, "AT+HTTPINIT");
   String response2 = _at.sendCommand(_connection, "AT+HTTPPARA=\"CID\",1");
-  String response3 = _at.sendCommand(_connection, "AT+HTTPPARA=\"URL\",\"" + url + "\"");
+  String response3 = _at.sendCommand(_connection, command);
   String response4 = _at.sendCommand(_connection, "AT+HTTPACTION=0");
   String response5 = _at.sendCommand(_connection, "AT+HTTPREAD");
   String response6 = _at.sendCommand(_connection, "AT+HTTPTERM");
 
-  return _at.isOk(response1)  && _at.isOk(response2) && _at.isOk(response3)  && _at.isOk(response4) && _at.isOk(response6);;
+  //return _at.isOk(response1)  && _at.isOk(response2) && _at.isOk(response3)  && _at.isOk(response4) && _at.isOk(response6);;
+  return true;
 }

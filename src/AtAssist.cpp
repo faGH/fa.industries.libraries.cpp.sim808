@@ -20,15 +20,14 @@ String AtAssist::sendCommand(SoftwareSerial& connection, String command, int tim
 {
     String response = "";
      
-    connection.println(command);
-    
     _debugger.printLogLn("SERIAL REQUEST:: '" + command + "'");
+    connection.println(command);
 
     long int time = millis();
-    while( (time+timeout) > millis())
+    while((time+timeout) > millis())
     {
       while(connection.available())
-      {       
+      {
         char c = connection.read();
         
         response+=c;

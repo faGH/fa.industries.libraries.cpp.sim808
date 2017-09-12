@@ -16,16 +16,18 @@
 class Sim808
 {
   public:
-    Sim808(int rxPin, int txPin);
+    Sim808(int rxPin, int txPin, int powerPin);
     void initialize(int baudRate, bool debug);
     bool enableGsm(String apn, String username = "", String password = "");
     bool enableGps();
-    bool getAndSendLocationViaHttpGet(String& url);
+    bool disableGps();
+    bool getAndSendLocationViaHttpGet(String url);
     TinyGPSLocation getLocation();
   private:
     bool _debug;
     bool _gpsEnabled;
     bool _gsmEnabled;
+    int _powerPin;
     DebugAssist _debugger;
     AtAssist _at;
     SoftwareSerial _connection;
