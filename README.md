@@ -19,3 +19,6 @@ Library collection written in C++ with IOT in mind
 
 ## Notice
 All reference material can be found in this repository that was used to create it. This repository was created with bare minimum requirements for the project that it was used for. Feel free to extend and improve based on your own needs.
+
+## Contribute
+In order to contribute, clone the repository, make changes and create a pull request.
