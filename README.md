@@ -22,3 +22,6 @@ All reference material can be found in this repository that was used to create i
 
 ## Contribute
 In order to contribute, clone the repository, make changes and create a pull request.
+
+## Support
+For any queries, contact deanmar@outlook.com.
