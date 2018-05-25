@@ -1,7 +1,4 @@
 # fa.industries.libraries.iot
-### FrostAura.Industries.Libraries.IoT
-
-## Description
 Library collection written in C++ with IOT in mind
 
 ## Libraries
