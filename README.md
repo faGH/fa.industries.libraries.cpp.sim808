@@ -21,4 +21,10 @@ All reference material can be found in this repository that was used to create i
 In order to contribute, clone the repository, make changes and create a pull request.
 
 ## Support
-For any queries, contact deanmar@outlook.com.
+If you enjoy FrostAura open-source content and would like to support us in continuous delivery, please consider a donation via a platform of your choice.
+
+| Supported Platforms | Link |
+| ------------------- | ---- |
+| PayPal | [Donate via Paypal](https://www.paypal.com/donate/?hosted_button_id=SVEXJC9HFBJ72) |
+
+For any queries, contact dean.martin@frostaura.net.
